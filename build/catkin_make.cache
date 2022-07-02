@@ -1,0 +1,2 @@
+ackermann-drive-teleop:ackermann_msgs:rf2o_laser_odometry:robot_localization:robot_pose_ekf:ros_imu_bno055:steering:ydlidar_ros_driver
+-DCATKIN_DEVEL_PREFIX=/home/ubuntu/F1bot/devel -DCMAKE_INSTALL_PREFIX=/home/ubuntu/F1bot/install -G Unix Makefiles
