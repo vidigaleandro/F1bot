@@ -41,7 +41,7 @@ velo = [0, 0, 0, 0, 0]
 odom_pub = rospy.Publisher("odom", Odometry, queue_size=10) 
 odom_broadcaster = tf.TransformBroadcaster()
 rospy.init_node("Subscriber_Node", anonymous=True)
-rospy.init_node('odometry_publisher', anonymous=True)
+#rospy.init_node('odometrys_publisher', anonymous=True)
 
 current_time = rospy.Time.now()
 last_time = rospy.Time.now()
@@ -152,7 +152,7 @@ def steering_wheel():
             value -= 1 << 16
         # Convert value to voltage
         v = value * 4.096 / 32768
-
+	(roll, pitch, yaw) = tf.transformations.euler_from_quaternion(orientation_list)
         print("====================================================")
         print("YAW: ", yaw)
         print("====================================================")

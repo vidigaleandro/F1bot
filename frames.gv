@@ -1,7 +1,12 @@
 digraph G {
-"base_footprint" -> "laser_frame"[label="Broadcaster: /base_link_to_laser4\nAverage rate: 25.097 Hz\nMost recent transform: 1656000611.563 ( -0.022 sec old)\nBuffer length: 4.901 sec\n"];
+"map" -> "odom"[label="Broadcaster: /map_link_to_odom\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1658527303.090 sec old)\nBuffer length: 0.000 sec\n"];
+"world" -> "map"[label="Broadcaster: /world_pub\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1658527303.090 sec old)\nBuffer length: 0.000 sec\n"];
+"base_footprint" -> "base_link"[label="Broadcaster: /basefoot_link_to_baselink\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1658527303.090 sec old)\nBuffer length: 0.000 sec\n"];
+"odom" -> "base_footprint"[label="Broadcaster: /rf2o_laser_odometry\nAverage rate: 10.208 Hz\nMost recent transform: 1658527303.023 ( 0.068 sec old)\nBuffer length: 4.800 sec\n"];
+"base_link" -> "imu_link"[label="Broadcaster: /base_link_to_IMU\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1658527303.090 sec old)\nBuffer length: 0.000 sec\n"];
+"base_link" -> "laser_frame"[label="Broadcaster: /base_link_to_Laser\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1658527303.090 sec old)\nBuffer length: 0.000 sec\n"];
 edge [style=invis];
  subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
-"Recorded at time: 1656000611.541"[ shape=plaintext ] ;
- }->"base_footprint";
+"Recorded at time: 1658527303.090"[ shape=plaintext ] ;
+ }->"world";
 }

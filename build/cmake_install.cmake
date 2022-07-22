@@ -136,7 +136,6 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("/home/ubuntu/F1bot/build/steering/cmake_install.cmake")
   include("/home/ubuntu/F1bot/build/ros_imu_bno055/cmake_install.cmake")
   include("/home/ubuntu/F1bot/build/rf2o_laser_odometry/cmake_install.cmake")
-  include("/home/ubuntu/F1bot/build/robot_pose_ekf/cmake_install.cmake")
   include("/home/ubuntu/F1bot/build/robot_localization/cmake_install.cmake")
   include("/home/ubuntu/F1bot/build/ydlidar_ros_driver/cmake_install.cmake")
 
