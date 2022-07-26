@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+
+from tf.transformations import euler_from_quaternion
 import tf
 import os
 import rospy
@@ -37,11 +39,20 @@ x = 0
 y = 0
 tint = 0
 velo = [0, 0, 0, 0, 0]
+x_vel = 0
+y_vel = 0
+roll=0
+pitch=0
 
-odom_pub = rospy.Publisher("odom", Odometry, queue_size=10) 
+odom_pub = rospy.Publisher("odom", Odometry, queue_size=1) 
 odom_broadcaster = tf.TransformBroadcaster()
 rospy.init_node("Subscriber_Node", anonymous=True)
 #rospy.init_node('odometrys_publisher', anonymous=True)
+current_time = rospy.Time.now()
+last_time = rospy.Time.now()
+
+
+
 
 current_time = rospy.Time.now()
 last_time = rospy.Time.now()
@@ -71,7 +82,7 @@ def callback(data):
     drive_msg = data
     angle = data.drive.steering_angle
     set_vel = data.drive.speed
-    PAng = rospy.Publisher('Drive', steer, queue_size=10)
+    PAng = rospy.Publisher('Drive', steer, queue_size=1)
     rate = rospy.Rate(10)
     #print("ANGULO TESTE",angle)
     # print("=====================================================")
@@ -86,16 +97,35 @@ def callback2(data):
     print yaw
 
 
+
 def listener():
     
     rospy.Subscriber('Drive', AckermannDriveStamped, callback)
     rospy.Subscriber('/imu/data', Imu, callback2)
 
 
-def publiser():
-    
-    rospy.Publisher("Odom", Odometry, queue_size=1)
+def publisher():
+    global x,y,yaw,x_vel,y_vel
+    #rospy.Publisher("Odom", Odometry, queue_size=1)
     # rospy.spin()
+    while not rospy.is_shutdown():
+    	odom_quat = tf.transformations.quaternion_from_euler(0, 0, yaw)
+    	odom_broadcaster.sendTransform(
+       		(x, y, 0.),
+       		odom_quat,
+       	 	current_time,
+       	 	"base_link",
+       	 	"odom"
+    	)
+    	odom = Odometry()
+    	odom.header.stamp = rospy.Time.now()
+    	odom.header.frame_id = "odom"
+
+    	odom.pose.pose = Pose(Point(x, y, 0.), Quaternion(*odom_quat))
+    	odom.child_frame_id = "base_link"
+    	odom.twist.twist = Twist(Vector3(x_vel, y_vel, 0), Vector3(0, 0, 0))
+    	odom_pub.publish(odom)
+
 
 
 gpio.setwarnings(False)
@@ -135,12 +165,13 @@ Pi = 50
 gpio.add_event_detect(26, gpio.BOTH, encoder)
 pwm2reg = 0
 
-
+ 
 def steering_wheel():
-    global vel, pwm2reg, set_vel, PAng, angle, yaww, orientation_list, yaw, x, y, dt, tint
+    global vel, pwm2reg, set_vel, PAng, angle, yaww, orientation_list, yaw, x, y, dt, tint, last_time,roll, pitch
     while not rospy.is_shutdown():
         current_time = rospy.Time.now()
-        # Start conversion
+        dt = (current_time - last_time).to_sec()
+	# Start conversion
         bus.write_i2c_block_data(address, reg_config, config)
         # Wait for conversion
         # time.sleep(0.02)
@@ -152,7 +183,7 @@ def steering_wheel():
             value -= 1 << 16
         # Convert value to voltage
         v = value * 4.096 / 32768
-	(roll, pitch, yaw) = tf.transformations.euler_from_quaternion(orientation_list)
+	
         print("====================================================")
         print("YAW: ", yaw)
         print("====================================================")
@@ -161,8 +192,8 @@ def steering_wheel():
         print('v  Valor de tensao: ', v)
         print("====================================================")
         # Wait a second to start again
-        angle = angle*1.8  # to keyboard
-        # angle = (angle*180)/math.pi #to auto.py
+        # angle = angle*1.8  # to keyboard
+        angle = (angle*180)/math.pi #to auto.py
         print("Angulo setado antes: ", angle)
         print("====================================================")
         steerangle = angle/44.44+0.555
@@ -203,6 +234,7 @@ def steering_wheel():
         error2 = 5.25*(set_vel-vel)
         #print("velocidade setada", set_vel)
         #print("erro na velocidade", error2)
+	#error2 = 0
         if error2 > 0 and abs(error2) > 0:
             pwm2reg = pwm2reg + 0.05
   #          print("pwm", pwm2reg)
@@ -218,12 +250,12 @@ def steering_wheel():
             pwm2.ChangeDutyCycle(pwm2reg)
             gpio.output(16, 1)
         tint += 1
-        if tint == 1:
-            time_int = time.time()
-        if tint == 2:
-            time_int2 = time.time()
-            dt = time_int2 - time_int
-            tint = 0
+        #if tint == 1:
+        #    time_int = time.time()
+        #if tint == 2:
+        #    time_int2 = time.time()
+        #    dt = time_int2 - time_int
+        #    tint = 0
 
         velo.append(vel)
         vm = np.mean(velo)
@@ -245,26 +277,34 @@ def steering_wheel():
         print("====================================================")
         print("Distancia em Y: ", y)
         print("====================================================")
-        odom_quat = tf.transformations.quaternion_from_euler(0, 0, yaw)
-        odom_broadcaster.sendTransform(
-            (x, y, 0.),
+
+        odom_quat = tf.transformations.quaternion_from_euler(roll, pitch, yaw)
+    	odom_broadcaster.sendTransform(
+    	    (x, y, odom_quat[2]),
             odom_quat,
             current_time,
             "base_link",
             "odom"
         )
-        odom = Odometry()
-        odom.header.stamp = rospy.Time.now()
-        odom.header.frame_id = "odom"
+    	odom = Odometry()
+    	odom.header.stamp = rospy.Time.now()
+    	odom.header.frame_id = "odom"
 
-        odom.pose.pose = Pose(Point(x, y, 0.), Quaternion(*odom_quat))
-        odom.child_frame_id = "base_link"
-        odom.twist.twist = Twist(Vector3(x_vel, y_vel, 0), Vector3(0, 0, 0))
-        odom_pub.publish(odom)
+  	odom.pose.pose = Pose(Point(x, y, 0.), Quaternion(*odom_quat))
+    	odom.child_frame_id = "base_link"
+    	odom.twist.twist = Twist(Vector3(x_vel, y_vel, 0), Vector3(0, 0, 0))
+    	odom_pub.publish(odom)
+
+
+
+        
         last_time = current_time
 if __name__ == '__main__':
     try:
         listener()
         steering_wheel()
+#	publisher()
+	#odom_pub.publish(odom)
     except rospy.ROSInterruptException:
-        pass
+    	rospy.logerr("ROS Interrupt Exception! Just ignore the exception!")
+    #  pass

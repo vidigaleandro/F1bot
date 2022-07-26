@@ -25,11 +25,6 @@
     <param name="freq" value="10.0"/>                            # Execution frequency.
     <param name="verbose" value="true" />                       # verbose
   </node>
-  
-  <node pkg="steering" type="broadcaster.py" name="world_pub" args="map 0 0 0 0 0 0" />
-  <node pkg="tf2_ros" type="static_transform_publisher" name="map_link_to_odom" args="0 0 0 0 0 0 map odom" />
-  <node pkg="tf2_ros" type="static_transform_publisher" name="basefoot_link_to_baselink" args="0 0 0.1 0 0 0 base_footprint base_link" />
-  <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_IMU" args="-0.03 0 0 0 0 0 base_link imu_link" />
-  <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_Laser" args="0.05 0 0 0 0 0 base_link laser_frame" />  
+    
 
 </launch>

@@ -20,7 +20,8 @@ tup = ([0, 0], [0, 0])
 Fsen = np.asarray(tup)
 yaw = 0
 Fobs = [0, 0]
-
+x =0
+y= 0
 
 markera = Marker()
 markerb = Marker()
@@ -59,7 +60,7 @@ def Fi(data):
     ranz = ran.size
     #print('tamanho', ran.size)
     for i in range(0, 505, 1):
-        if ran[i] > 0.15 and ran[i] < 2:
+        if ran[i] > 0.15 and ran[i] < 5:
 
             xa += n*((ran[i]*math.cos((((i*360/ranz))*math.pi/180))
                      * 2*(d-ran[i]))/(d*ran[i]**4))
@@ -123,8 +124,8 @@ def go_to_goal(x_goal, y_goal):
     ack_msg.drive.steering_angle = 0.0
     angular_yaw = 0
     max_steering_angle = 0.15
-    max_speed = 2
-    k = 50000
+    max_speed = 1
+    k = 20000000
     K_angular = 1
     speed = []
 
@@ -183,13 +184,13 @@ def go_to_goal(x_goal, y_goal):
         #print (Fdist)
         angular_yaw = ((math.atan2((Fsum[1]), Fsum[0])))
 
-        linear_speed = 1.5/((1+5*abs(angular_yaw)))
+        linear_speed = 0.5/((1+5*abs(angular_yaw)))
         if linear_speed < 0.40:
             linear_speed = 0.40
 
         # print linear_speed
 	angular_yaw2 = angular_yaw
-
+	print (angular_yaw)
         if angular_yaw2 > max_steering_angle:
             angular_yaw2 = 1*max_steering_angle
         if angular_yaw2 < (-1) * max_steering_angle:
@@ -248,7 +249,7 @@ if __name__ == '__main__':
 
         #=======================LEVINE===================================#
 
-        go_to_goal(-11.0, 0)
+        go_to_goal(-6.0, 0)
         print("Next point")
         #go_to_goal(-8.5,1.0)
         #print("Next point")
