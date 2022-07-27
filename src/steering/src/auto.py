@@ -139,7 +139,7 @@ def go_to_goal(x_goal, y_goal):
 
         Fobsmod = abs((math.sqrt(((Fobs[1]) ** 2) + ((Fobs[0]) ** 2)))/1)
         desired_angle_goal_obs = ((math.atan2(Fobs[1], Fobs[0])))
-
+	print(yaw)
         if yaw < 0:
             yaw += 2*math.pi
 
@@ -218,7 +218,7 @@ if __name__ == '__main__':
     try:
 
         rospy.init_node('robot_motion_pose', anonymous=True)
-        odom_sub = rospy.Subscriber('/odom_rf2o', Odometry, odom_callback)
+        odom_sub = rospy.Subscriber('/odom', Odometry, odom_callback)
         publishera = rospy.Publisher('Result', Marker, queue_size=1)
         publisherb = rospy.Publisher('Distancia', Marker, queue_size=1)
         publisherc = rospy.Publisher('Parede', Marker, queue_size=1)

@@ -89,7 +89,7 @@ def callback(data):
 
 
 def callback2(data):
-    global yaw, orientation_list
+    global yaw, orientation_list, roll, pitch
     orientation_q = data.orientation
     orientation_list = [orientation_q.x, orientation_q.y,
                         orientation_q.z, orientation_q.w]
