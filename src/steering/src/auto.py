@@ -20,8 +20,8 @@ tup = ([0, 0], [0, 0])
 Fsen = np.asarray(tup)
 yaw = 0
 Fobs = [0, 0]
-x =0
-y= 0
+x = 0
+y = 0
 
 markera = Marker()
 markerb = Marker()
@@ -139,7 +139,9 @@ def go_to_goal(x_goal, y_goal):
 
         Fobsmod = abs((math.sqrt(((Fobs[1]) ** 2) + ((Fobs[0]) ** 2)))/1)
         desired_angle_goal_obs = ((math.atan2(Fobs[1], Fobs[0])))
-	print(yaw)
+
+        print(yaw)
+
         if yaw < 0:
             yaw += 2*math.pi
 
@@ -189,8 +191,11 @@ def go_to_goal(x_goal, y_goal):
             linear_speed = 0.40
 
         # print linear_speed
-	angular_yaw2 = angular_yaw
-	print (angular_yaw)
+
+            angular_yaw2 = angular_yaw
+
+            print(angular_yaw)
+
         if angular_yaw2 > max_steering_angle:
             angular_yaw2 = 1*max_steering_angle
         if angular_yaw2 < (-1) * max_steering_angle:
@@ -208,10 +213,12 @@ def go_to_goal(x_goal, y_goal):
         # print 'x=', x, 'y=',y, "yaw=",yaw, "desired=", angular_yaw
 
         time.sleep(0.01)
+
         if (distance < 1):
             break
-    ack_msg.drive.speed = 0.0
-    ack_publisher.publish(ack_msg)
+
+        ack_msg.drive.speed = 0.0
+        ack_publisher.publish(ack_msg)
 
 
 if __name__ == '__main__':
@@ -251,7 +258,7 @@ if __name__ == '__main__':
 
         go_to_goal(-6.0, 0)
         print("Next point")
-        #go_to_goal(-8.5,1.0)
+        # go_to_goal(-8.5,1.0)
         #print("Next point")
         # go_to_goal(-13.8,8)
         #print("Next point")

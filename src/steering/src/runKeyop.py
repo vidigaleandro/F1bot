@@ -290,7 +290,7 @@ def steering_wheel():
     	odom.header.stamp = rospy.Time.now()
     	odom.header.frame_id = "odom"
 
-  	odom.pose.pose = Pose(Point(x, y, 0.), Quaternion(*odom_quat))
+    	odom.pose.pose = Pose(Point(x, y, 0.), Quaternion(*odom_quat))
     	odom.child_frame_id = "base_link"
     	odom.twist.twist = Twist(Vector3(x_vel, y_vel, 0), Vector3(0, 0, 0))
     	odom_pub.publish(odom)
