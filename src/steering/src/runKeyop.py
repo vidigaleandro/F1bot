@@ -169,8 +169,8 @@ pwm2reg = 0
 def steering_wheel():
     global vel, pwm2reg, set_vel, PAng, angle, yaww, orientation_list, yaw, x, y, dt, tint, last_time,roll, pitch
     while not rospy.is_shutdown():
-        current_time = rospy.Time.now()
-        dt = (current_time - last_time).to_sec()
+        #current_time = rospy.Time.now()
+        #dt = (current_time - last_time).to_sec()
 	# Start conversion
         bus.write_i2c_block_data(address, reg_config, config)
         # Wait for conversion
@@ -192,8 +192,8 @@ def steering_wheel():
         print('v  Valor de tensao: ', v)
         print("====================================================")
         # Wait a second to start again
-        # angle = angle*1.8  # to keyboard
-        angle = (angle*180)/math.pi #to auto.py
+        angle = angle*1.8  # to keyboard
+        #angle = (angle*180)/math.pi #to auto.py
         print("Angulo setado antes: ", angle)
         print("====================================================")
         steerangle = angle/44.44+0.555
@@ -250,12 +250,12 @@ def steering_wheel():
             pwm2.ChangeDutyCycle(pwm2reg)
             gpio.output(16, 1)
         tint += 1
-        #if tint == 1:
-        #    time_int = time.time()
-        #if tint == 2:
-        #    time_int2 = time.time()
-        #    dt = time_int2 - time_int
-        #    tint = 0
+        if tint == 1:
+            time_int = time.time()
+        if tint == 2:
+            time_int2 = time.time()
+            dt = time_int2 - time_int
+            tint = 0
 
         velo.append(vel)
         vm = np.mean(velo)
@@ -298,7 +298,7 @@ def steering_wheel():
 
 
         
-        last_time = current_time
+        #last_time = current_time
 if __name__ == '__main__':
     try:
         listener()
