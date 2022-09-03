@@ -128,6 +128,11 @@ def steering_wheel():
 	AcMsg.drive.jerk = set_vel
 	pub.publish(AcMsg)
 
+        ackermann_cmd_msg = AckermannDriveStamped()
+        ackermann_cmd_msg.drive.speed = 0
+        ackermann_cmd_msg.drive.steering_angle = 0
+        self.motors_pub.publish(ackermann_cmd_msg)
+
         last_time = current_time
 
 if __name__ == '__main__':
