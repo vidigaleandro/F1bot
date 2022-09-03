@@ -50,8 +50,8 @@ class AckermannDriveKeyop:
             max_speed = float(args[0])
             max_steering_angle = float(args[1])
         else:
-            max_speed = 5
-            max_steering_angle = 10
+            max_speed = 1000
+            max_steering_angle = 0.15
 
         if len(args) > 2:
             cmd_topic = '/' + args[2]

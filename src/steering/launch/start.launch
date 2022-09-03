@@ -4,7 +4,9 @@
     <include file="$(find ydlidar_ros_driver)/launch/X4.launch" />
     <include file="$(find ros_imu_bno055)/launch/imu.launch" /> 
 
-    <node pkg="steering" type="runKeyop.py" name="Subscriber_Node" output="screen"/>
+    <node pkg="steering" type="AcelerationDrive.py" name="Aceleration_Node" output="screen"/>
+    <node pkg="steering" type="SteeringDrive.py" name="Steering_Node" output="screen"/>
+    <node pkg="steering" type="Odometry.py" name="Odometry_Node" output="screen"/>
     
 </launch>
 

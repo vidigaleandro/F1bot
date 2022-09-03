@@ -43,7 +43,7 @@ address = 0x48  # ADS1115 address and registers
 reg_config = 0x01
 reg_conversion = 0x00
 bus = SMBus(channel)
-config = [0xC2, 0xB3]# Config value: Single conversion;A0 input;4.096V reference
+config = [0xC2, 0xB3] # Config value: Single conversion;A0 input;4.096V reference
 
 def steering_wheel():
     global angle, last_time
@@ -57,7 +57,7 @@ def steering_wheel():
     kd = 0.1                          # Diferencial PID Gain
     ki = 1                            # Integral PID Gain
 
-    maxangle = -0.15                   # Max angle RAD
+    maxangle = 0.15                   # Max angle RAD
     while not rospy.is_shutdown():
         current_time = rospy.Time.now()             #Time for delta T
         dt = (current_time - last_time).to_sec()    #Calculate delta T
@@ -78,17 +78,25 @@ def steering_wheel():
 
         # Wait a second to start again
         #angle = angle*1.8  # to keyboard
-	angle= -0.15                 # in radians
-        if angle > maxangle:
-	    angle = maxangle
-        if angle < -maxangle:
+	#angle= 0                 # in radians
+        print("====================================================")
+        print('Angle: ', angle)
+        print("====================================================")
+
+	if angle > maxangle:
+            angle = maxangle
+	if angle < -maxangle:
             angle = -maxangle
+        #if angle > maxangle:
+        #    angle = maxangle
+        #if angle < -maxangle:
+        #    angle = -maxangle
 
-        angle = (angle*180)/math.pi  # to auto.py
+        print("Angulo setado antes: ", angle)
+        print("====================================================")
 
-        #print("Angulo setado antes: ", angle)
-        #print("====================================================")
-        steerangle = angle/44.44+1.65  # SET ANGLE
+        
+        steerangle = ((angle*180)/math.pi)/44.44+1.65  # SET ANGLE
 
         # Control Calculate
         error = steerangle-v                    # error Calculate

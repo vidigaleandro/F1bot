@@ -87,7 +87,7 @@ def steering_wheel():
 	     speed = 0
         
         
-        set_vel = 500
+        #set_vel = 100
         error = (set_vel-speed)             # Calculate Vel Error
         edT = (error-eprev)/dt                  # derivative error calculate
         eint = eint + error*dt                  # integral error calculate
@@ -128,11 +128,7 @@ def steering_wheel():
 	AcMsg.drive.jerk = set_vel
 	pub.publish(AcMsg)
 
-        ackermann_cmd_msg = AckermannDriveStamped()
-        ackermann_cmd_msg.drive.speed = 0
-        ackermann_cmd_msg.drive.steering_angle = 0
-        self.motors_pub.publish(ackermann_cmd_msg)
-
+        
         last_time = current_time
 
 if __name__ == '__main__':
