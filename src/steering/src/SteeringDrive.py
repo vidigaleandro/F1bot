@@ -6,6 +6,10 @@ from ackermann_msgs.msg import AckermannDriveStamped
 from smbus2 import SMBus
 import RPi.GPIO as gpio
 
+# Intializate Node
+
+rospy.init_node("SteeringDrive", anonymous=True)
+
 # Global Variables
 angle = 0
 current_time = rospy.Time.now()
@@ -18,11 +22,10 @@ def callback(data):
     drive_msg = data
     angle = data.drive.steering_angle
 
-# Intializate Node
-
-
-rospy.init_node("SteeringDrive", anonymous=True)
+# Initializate Subscriber
 rospy.Subscriber('Drive', AckermannDriveStamped, callback)
+
+
 
 # GPIO Setup
 gpio.setwarnings(False)
@@ -50,11 +53,11 @@ def steering_wheel():
     u = 0                           # Control Signal
 
     # PID Constants
-    kp = 1                          # Proporcional PID Gain
-    kd = 0                          # Diferencial PID Gain
-    ki = 0                          # Integral PID Gain
+    kp = 100                          # Proporcional PID Gain
+    kd = 0.1                          # Diferencial PID Gain
+    ki = 1                            # Integral PID Gain
 
-    # angle = 0.2 #Define Angle
+    maxangle = -0.15                   # Max angle RAD
     while not rospy.is_shutdown():
         current_time = rospy.Time.now()             #Time for delta T
         dt = (current_time - last_time).to_sec()    #Calculate delta T
@@ -74,12 +77,18 @@ def steering_wheel():
         print("====================================================")
 
         # Wait a second to start again
-        # angle = angle*1.8  # to keyboard
+        #angle = angle*1.8  # to keyboard
+	angle= -0.15                 # in radians
+        if angle > maxangle:
+	    angle = maxangle
+        if angle < -maxangle:
+            angle = -maxangle
+
         angle = (angle*180)/math.pi  # to auto.py
 
-        print("Angulo setado antes: ", angle)
-        print("====================================================")
-        steerangle = angle/44.44+0.555  # SET ANGLE
+        #print("Angulo setado antes: ", angle)
+        #print("====================================================")
+        steerangle = angle/44.44+1.65  # SET ANGLE
 
         # Control Calculate
         error = steerangle-v                    # error Calculate
@@ -88,13 +97,23 @@ def steering_wheel():
         u = kp*error + kd*edT + ki*eint         # control signal
         eprev = error                           # store previous error
 
+        print("====================================================")
+        print('Error: ', error)
+        print("====================================================")
+
+        print("====================================================")
+        print('Steering Angle: ', steerangle)
+        print("====================================================")
+
+
+
         # motor power
         pwr = abs(u)
 
         # TODO adjust the error
 
-        if(pwr > 3):
-            pwr = 3
+        if(pwr > 100):
+            pwr = 100
 
         # motor direction
         dir = 1
@@ -129,3 +148,5 @@ if __name__ == '__main__':
 
     except rospy.ROSInterruptException:
         rospy.logerr("ROS Interrupt Exception! Just ignore the exception!")
+	angle = 0
+        gpio.output(22,0)

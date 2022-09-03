@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-
+	
 import rospy
 from ackermann_msgs.msg import AckermannDriveStamped
 import RPi.GPIO as gpio
 import time
-
+import numpy as np
 global set_vel
 
 # Variaveis Globais
@@ -12,9 +12,9 @@ dt = 0
 pin26_prevtime = time.time()
 pin26_counter = 0
 pin26_time = time.time()
-vel = 0
+speed = 0
 set_vel = 0
-
+t = 0
 
 rospy.init_node("Aceleration_Drive", anonymous=True)
 
@@ -26,16 +26,24 @@ def callback(data):
     set_vel = data.drive.speed
 
 def encoder(pin):
-    global pin26_prevtime, pin26_counter, pin26_time, t, vel
+    global pin26_prevtime, pin26_counter, pin26_time, t, speed
 
     pin26_counter += 1
+    #print(pin26_counter)
     pin26_time = time.time()
+    #speed = (pin26_time - pin26_prevtime)
+    #speed = 1/speed
+    if speed > 2000:
+    	speed = 2000
+    
+	#print(t2)
     t2 = (pin26_time - pin26_prevtime)
     t = t + t2
     pin26_prevtime = time.time()
 
-    if t > 0.01:
-        vel = pin26_counter/t
+    if t > 0.001:
+        speed=pin26_counter/t
+	#print (speed)
         pin26_counter = 0
         t = 0
 
@@ -53,36 +61,51 @@ gpio.add_event_detect(26, gpio.BOTH, encoder)
 pwm2reg = 0
 
 def steering_wheel():
-    global vel, pwm2reg, set_vel, dt, last_time
+    global speed, pwm2reg, set_vel, dt, last_time
+    
     edT = 0                         # Derivative Error
     eprev = 0                       # Previous Error
     eint = 0                        # Integral Error
     u = 0                           # Control Signal
 
     # PID Constants
-    kp = 5.25                       # Proporcional PID Gain
-    kd = 1                          # Diferencial PID Gain
-    ki = 0                          # Integral PID Gain
-
+    kp = 0.2                          # Proporcional PID Gain
+    kd = 0.0001                          # Diferencial PID Gain
+    ki = 0.0002                          # Integral PID Gain
+    
+    pub = rospy.Publisher('AcDrive', AckermannDriveStamped, queue_size=1)
+    
+    pwr = 0
     while not rospy.is_shutdown():
 
         current_time = rospy.Time.now()
         dt = (current_time - last_time).to_sec()
-
-        vel = vel/525
-
-        set_vel = 1
-        error = (set_vel-vel)                   # Calculate Vel Error
+	
+        #print(speed)
+        
+        if speed > 1999:
+	     speed = 0
+        
+        
+        set_vel = 500
+        error = (set_vel-speed)             # Calculate Vel Error
         edT = (error-eprev)/dt                  # derivative error calculate
         eint = eint + error*dt                  # integral error calculate
         u = kp*error + kd*edT + ki*eint         # control signal
         eprev = error                           # store previous error
-
+	
+	#print(u)
+	
         # motor power
-        pwr = abs(u)
+	if u <0:
+	     u=0.05     
+	pwr = abs(u)
+	
 
-        if(pwr > 20):
-            pwr = 20
+        if(pwr > 100):
+            pwr = 100
+
+        print(speed)
 
         # motor direction
         dir = 1
@@ -94,11 +117,16 @@ def steering_wheel():
         # Set PWN Output
         if dir == -1:
             gpio.output(16, 0)
-            # print("Para Trás")
+            # print("Para Tras")
 
         elif dir == 1:
             gpio.output(16, 1)
             # print("Para Frente")
+	
+	AcMsg = AckermannDriveStamped()
+	AcMsg.drive.speed = speed
+	AcMsg.drive.jerk = set_vel
+	pub.publish(AcMsg)
 
         last_time = current_time
 
