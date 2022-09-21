@@ -125,7 +125,7 @@ def go_to_goal(x_goal, y_goal):
     angular_yaw = 0
     max_steering_angle = 0.15
     max_speed = 1
-    k = 20000000
+    k = 100
     K_angular = 1
     speed = []
 
@@ -192,7 +192,7 @@ def go_to_goal(x_goal, y_goal):
 
         # print linear_speed
 
-            angular_yaw2 = angular_yaw
+            angular_yaw2 = angular_yaw/10
 
             print(angular_yaw)
 
