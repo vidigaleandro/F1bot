@@ -86,7 +86,7 @@ def steering_wheel():
 	
 	if pin19_ant != pin19 :
 	    vel_time = rospy.Time.now().to_sec()
-            vel = 0.01/(vel_time - vel_time_ant)
+            vel = 0.0012/(vel_time - vel_time_ant)
             vel_time_ant = vel_time
 	    
 	pin19_ant = pin19

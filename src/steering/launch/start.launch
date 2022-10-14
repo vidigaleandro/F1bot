@@ -7,6 +7,6 @@
     <node pkg="steering" type="AcelerationDrive.py" name="Aceleration_Node" output="screen"/>
     <node pkg="steering" type="SteeringDrive.py" name="Steering_Node" output="screen"/>
     <node pkg="steering" type="Odometry.py" name="Odometry_Node" output="screen"/>
-    
+    <node pkg="steering" type="bagwriter.py" name ="bagwriter" output="screen"/>
 </launch>
 
