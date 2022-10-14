@@ -57,7 +57,7 @@ def steering_wheel():
     kd = 0.1                          # Diferencial PID Gain
     ki = 1                            # Integral PID Gain
 
-    maxangle = 0.15                   # Max angle RAD
+    maxangle = 0.18                   # Max angle RAD
     while not rospy.is_shutdown():
         current_time = rospy.Time.now()             #Time for delta T
         dt = (current_time - last_time).to_sec()    #Calculate delta T
@@ -120,8 +120,8 @@ def steering_wheel():
 
         # TODO adjust the error
 
-        if(pwr > 100):
-            pwr = 100
+        if(pwr > 15):
+            pwr = 15
 
         # motor direction
         dir = 1

@@ -54,7 +54,7 @@ def Fi(data):
     global Fsen
     xa = 0
     ya = 0
-    n = 3
+    n = 6
     d = 0.15
     ran = np.asarray(data.ranges)
     ranz = ran.size
@@ -76,11 +76,11 @@ def go_to_goal(x_goal, y_goal):
     global x, y, yaw, Fsum, Fobs, linear_speed, line_point, count, linear_speed_med, marker, line_save, id
 
     markera = Marker()
-    markera.header.frame_id = "/world"
+    markera.header.frame_id = "world"
     markerb = Marker()
-    markerb.header.frame_id = "/world"
+    markerb.header.frame_id = "world"
     markerc = Marker()
-    markerc.header.frame_id = "/world"
+    markerc.header.frame_id = "world"
 
     markera.type = markera.ARROW
     markera.action = markera.ADD
@@ -124,7 +124,7 @@ def go_to_goal(x_goal, y_goal):
     ack_msg.drive.steering_angle = 0.0
     angular_yaw = 0
     max_steering_angle = 0.15
-    max_speed = 1
+    max_speed = 4
     k = 100
     K_angular = 1
     speed = []
@@ -187,8 +187,8 @@ def go_to_goal(x_goal, y_goal):
         angular_yaw = ((math.atan2((Fsum[1]), Fsum[0])))
 
         linear_speed = 0.5/((1+5*abs(angular_yaw)))
-        if linear_speed < 0.40:
-            linear_speed = 0.40
+        if linear_speed < 2:
+            linear_speed = 2
 
         # print linear_speed
 
@@ -217,7 +217,7 @@ def go_to_goal(x_goal, y_goal):
         if (distance < 1):
             break
 
-        ack_msg.drive.speed = 0.0
+        ack_msg.drive.speed = 3.0
         ack_publisher.publish(ack_msg)
 
 
