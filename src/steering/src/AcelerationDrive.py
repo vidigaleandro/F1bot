@@ -71,7 +71,7 @@ def steering_wheel():
     u = 0                           # Control Signal
     teste = 0
     # PID Constants
-    kp = 2                          # Proporcional PID Gain
+    kp = 3                          # Proporcional PID Gain
     kd = 0                             # Diferencial PID Gain
     ki = 0.0005                          # Integral PID Gain
     vel = 0
@@ -86,7 +86,7 @@ def steering_wheel():
 	
 	if pin19_ant != pin19 :
 	    vel_time = rospy.Time.now().to_sec()
-            vel = 0.0012/(vel_time - vel_time_ant)
+            vel = 0.0017/(vel_time - vel_time_ant)
             vel_time_ant = vel_time
 	    
 	pin19_ant = pin19

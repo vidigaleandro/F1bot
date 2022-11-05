@@ -54,13 +54,13 @@ def Fi(data):
     global Fsen
     xa = 0
     ya = 0
-    n = 6
-    d = 0.15
+    n = 3
+    d = 0.25
     ran = np.asarray(data.ranges)
     ranz = ran.size
     #print('tamanho', ran.size)
     for i in range(0, 505, 1):
-        if ran[i] > 0.15 and ran[i] < 5:
+        if ran[i] > 0.10 and ran[i] < 5:
 
             xa += n*((ran[i]*math.cos((((i*360/ranz))*math.pi/180))
                      * 2*(d-ran[i]))/(d*ran[i]**4))
@@ -76,11 +76,11 @@ def go_to_goal(x_goal, y_goal):
     global x, y, yaw, Fsum, Fobs, linear_speed, line_point, count, linear_speed_med, marker, line_save, id
 
     markera = Marker()
-    markera.header.frame_id = "world"
+    markera.header.frame_id = "base_link"
     markerb = Marker()
-    markerb.header.frame_id = "world"
+    markerb.header.frame_id = "base_link"
     markerc = Marker()
-    markerc.header.frame_id = "world"
+    markerc.header.frame_id = "base_link"
 
     markera.type = markera.ARROW
     markera.action = markera.ADD
@@ -125,11 +125,13 @@ def go_to_goal(x_goal, y_goal):
     angular_yaw = 0
     max_steering_angle = 0.15
     max_speed = 4
-    k = 100
+    k = 400
     K_angular = 1
     speed = []
 
     while not rospy.is_shutdown():
+
+	#print(x,y)
 
         distance = abs(math.sqrt(((x_goal-x) ** 2) + ((y_goal-y) ** 2)))
         qx = (x_goal-x)
@@ -140,16 +142,16 @@ def go_to_goal(x_goal, y_goal):
         Fobsmod = abs((math.sqrt(((Fobs[1]) ** 2) + ((Fobs[0]) ** 2)))/1)
         desired_angle_goal_obs = ((math.atan2(Fobs[1], Fobs[0])))
 
-        print(yaw)
+        #print(yaw)
 
         if yaw < 0:
             yaw += 2*math.pi
 
-        if desired_angle_goal_dist < 0:
-            desired_angle_goal_dist += 2*math.pi
+        #if desired_angle_goal_dist < 0:
+        #    desired_angle_goal_dist += 2*math.pi
 
-        if desired_angle_goal_obs < 0:
-            desired_angle_goal_obs += 2*math.pi
+        #if desired_angle_goal_obs < 0:
+        #    desired_angle_goal_obs += 2*math.pi
 
         angular_yaw_dist = (desired_angle_goal_dist-yaw)
 
@@ -183,26 +185,31 @@ def go_to_goal(x_goal, y_goal):
         Fobs[1] = Fobsmod*math.sin(angular_yaw_obs)
 
         Fsum = Fdist + Fobs
+	#Fsum = Fdist
         #print (Fdist)
         angular_yaw = ((math.atan2((Fsum[1]), Fsum[0])))
 
         linear_speed = 0.5/((1+5*abs(angular_yaw)))
-        if linear_speed < 2:
-            linear_speed = 2
+        if linear_speed < 0.5:
+            linear_speed = 0.5
 
         # print linear_speed
 
-            angular_yaw2 = angular_yaw/10
+           # angular_yaw2 = angular_yaw/10
 
-            print(angular_yaw)
+            #print(angular_yaw)
 
-        if angular_yaw2 > max_steering_angle:
-            angular_yaw2 = 1*max_steering_angle
-        if angular_yaw2 < (-1) * max_steering_angle:
-            angular_yaw2 = 1*-max_steering_angle
+        #if angular_yaw > max_steering_angle:
+        #    angular_yaw = 1*max_steering_angle
+        #if angular_yaw < (-1) * max_steering_angle:
+        #    angular_yaw = 1*-max_steering_angle
+        print(angular_yaw,yaw)
+	print(x,y,distance)
+        if linear_speed >= 1:
+	    linear_speed =1
 
         ack_msg.drive.speed = linear_speed
-        ack_msg.drive.steering_angle = -angular_yaw2
+        ack_msg.drive.steering_angle = angular_yaw
 
         ack_publisher.publish(ack_msg)
 
@@ -213,11 +220,11 @@ def go_to_goal(x_goal, y_goal):
         # print 'x=', x, 'y=',y, "yaw=",yaw, "desired=", angular_yaw
 
         time.sleep(0.01)
-
+        #print(distance)
         if (distance < 1):
             break
 
-        ack_msg.drive.speed = 3.0
+        #ack_msg.drive.speed = 3.0
         ack_publisher.publish(ack_msg)
 
 
@@ -225,7 +232,7 @@ if __name__ == '__main__':
     try:
 
         rospy.init_node('robot_motion_pose', anonymous=True)
-        odom_sub = rospy.Subscriber('/odom', Odometry, odom_callback)
+        odom_sub = rospy.Subscriber('odom_filtred', Odometry, odom_callback)
         publishera = rospy.Publisher('Result', Marker, queue_size=1)
         publisherb = rospy.Publisher('Distancia', Marker, queue_size=1)
         publisherc = rospy.Publisher('Parede', Marker, queue_size=1)
@@ -256,8 +263,29 @@ if __name__ == '__main__':
 
         #=======================LEVINE===================================#
 
-        go_to_goal(-6.0, 0)
+        go_to_goal(-26.0, 0.0)
+	ack_msg = AckermannDriveStamped()
+	
         print("Next point")
+	ack_msg.drive.speed = 0
+        ack_msg.drive.steering_angle = 0 
+        ack_publisher.publish(ack_msg)
+	go_to_goal(26.0, -14.0)
+        print("Next point")
+        ack_msg.drive.speed = 0
+        ack_msg.drive.steering_angle = 0 
+        ack_publisher.publish(ack_msg)
+	go_to_goal(0.0, -14.0)
+        ack_msg.drive.speed = 0
+        ack_msg.drive.steering_angle = 0 
+        ack_publisher.publish(ack_msg)
+        go_to_goal(0.0, 0.0)
+        ack_msg.drive.speed = 0
+        ack_msg.drive.steering_angle = 0 
+        ack_publisher.publish(ack_msg)
+
+
+
         # go_to_goal(-8.5,1.0)
         #print("Next point")
         # go_to_goal(-13.8,8)

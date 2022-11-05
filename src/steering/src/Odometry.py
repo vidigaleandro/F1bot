@@ -23,7 +23,7 @@ roll = 0
 pitch = 0
 yaw = 0
 
-odom_pub = rospy.Publisher("odom", Odometry, queue_size=1)
+odom_pub = rospy.Publisher("odom_acker", Odometry, queue_size=1)
 odom_broadcaster = tf.TransformBroadcaster()
 rospy.init_node("Odometry", anonymous=True)
 current_time = rospy.Time.now()
@@ -54,6 +54,7 @@ def listener():
 def odometry_estimate():
     global speed, orientation_list, yaw, x, y,x_speed,y_speed, dt, last_time, roll, pitch
     odom = Odometry()
+    r = rospy.Rate(100)
     while not rospy.is_shutdown():
         current_time = rospy.Time.now()
         dt = (current_time - last_time).to_sec()
@@ -61,18 +62,19 @@ def odometry_estimate():
         speedM.append(speed)
         sm = np.mean(speedM)
         speedM.pop(0)
+	if sm < 0.3:
+	    sm = 0
 
-        x_speed = speed * math.cos(yaw)
+        x_speed = sm * math.cos(yaw)
         print("Velocidade em X: ", x_speed)
         print("====================================================")
         print("cos", math.cos(yaw))
         print("SEN", math.sin(yaw))
-        y_speed = speed * math.sin(yaw)
+        y_speed = sm * math.sin(yaw)
         print("Velocidade em Y: ", y_speed)
         print("====================================================")
-        if speed < 5 * sm and speed > sm/5:
-            x = x + 1*(x_speed * dt)
-            y = y + 1*(y_speed * dt)
+        x = x + (x_speed * dt)
+        y = y + (y_speed * dt)
         print("Distancia em X: ", x)
         print("====================================================")
         print("Distancia em Y: ", y)
@@ -90,11 +92,11 @@ def odometry_estimate():
         odom.header.stamp = rospy.Time.now()
         odom.header.frame_id = "odom"
 
-        odom.pose.pose = Pose(Point(x, y, 0.), Quaternion(*odom_quat))
+        odom.pose.pose = Pose(Point(-x, -y, 0.), Quaternion(*odom_quat))
         odom.child_frame_id = "base_link"
         odom.twist.twist = Twist(Vector3(x_speed, y_speed, 0), Vector3(0, 0, 0))
         odom_pub.publish(odom)
-
+	r.sleep()
         last_time = current_time
 
 

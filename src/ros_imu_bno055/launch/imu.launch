@@ -7,7 +7,7 @@
     <arg name="oscillator" default="EXTERNAL" />
     <arg name="reset_orientation" default="true" />
     <arg name="frequency" default="10" /> 
-    <arg name="use_magnetometer" default="false" />
+    <arg name="use_magnetometer" default="true" />
     <arg name="use_temperature" default="false" /> 
 
 
