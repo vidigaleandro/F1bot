@@ -6,6 +6,12 @@
 
 ### The strategy used for autonomous navigation was based on virtual potential fields.
 
+### Worked with ROS Melodic: http://wiki.ros.org/melodic/Installation/Ubuntu
+
+### Trekking coordinates: https://youtu.be/jMrno1yUcuE
+
+### Obstacle Avoidance: https://www.youtube.com/shorts/B1dMoqXmQtM
+
 ## HOW TO INSTALL THE APPLICATION:
 
 1) Use: `git clone https://github.com/vidigaleandro/F1bot` Inside Raspberry with ubuntu server 18.04 and ROS Melodic Installed. 
